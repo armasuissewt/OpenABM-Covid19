@@ -41,6 +41,40 @@ For developers, the following installs the Python interface inplace, so modifica
 make dev
 ```
 
+Building on Ubuntu 20.04 (armasuisse)
+-------------------------------------
+```bash
+# Installing ubuntu native build tools and GSL library
+sudo apt-get install build-essential
+sudo apt-get install libgsl-dev
+
+# Installing python and swig
+sudo apt-get install python3
+sudo update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+sudo update-alternatives --config python
+sudo apt-get install swig3.0
+sudo cp /usr/bin/swig3.0 /usr/bin/swig
+
+# Get the project
+sudo apt-get install git
+git clone https://github.com/armasuissewt/OpenABM-Covid19.git
+
+# Build OpenABM
+cd OpenABM-Covid19
+make all
+make install
+
+# Run a python example
+cd examples
+python example_101.py
+
+   Start simulation
+   Step 20 of 20
+   End simulation in 0.1121s
+
+```
+
+
 Usage
 -----
 
