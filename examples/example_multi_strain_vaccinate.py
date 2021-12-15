@@ -25,6 +25,7 @@ sys.path.append("../src/COVID19")
 from model import VaccineSchedule, Model
 from strain import Strain
 from vaccine import Vaccine
+import matplotlib.pyplot as plt
           
 if __name__ == '__main__':
     # some OS limit the number of process which can be spawned by default
