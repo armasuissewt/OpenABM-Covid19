@@ -27,8 +27,14 @@ if __name__ == '__main__':
 
     collect_data = pd.DataFrame()
 
-    for mult in [1.1, 1.3, 1.5, 1.6, 1.7, 1.9, 2.1]:
-        for ir in [2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5, 7.0]:
+    # open public data
+    zh_data_cum_deaths = pd.read_csv('zh/public_data.csv', nrows=80)['ncumul_deceased'].fillna(0)
+    print(zh_data_cum_deaths)
+    collect_data['zh_obs'] = zh_data_cum_deaths
+
+
+    for mult in [1.5, 1.7]:
+        for ir in [4.0, 4.5]:
 
             p = Parameters(
                 input_param_file=relative_path("zh/baseline_parameters.csv"),
@@ -38,10 +44,10 @@ if __name__ == '__main__':
                 read_param_file=True
             )
 
-            #p.set_param("n_total", 10000)
+            p.set_param("n_total", 100000)
             p.set_param("infectious_rate", ir)
             p.set_param("sd_infectiousness_multiplier", mult)
-            p.set_param("end_time", 180)
+            p.set_param("end_time", 80)
 
             abm = Model(p)
 
