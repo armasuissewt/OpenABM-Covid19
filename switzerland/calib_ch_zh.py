@@ -25,12 +25,10 @@ def relative_path(filename: str) -> str:
 
 if __name__ == '__main__':
 
-    collect_data = pd.DataFrame()
-
-    # open public data
-    zh_data_cum_deaths = pd.read_csv('zh/public_data.csv', nrows=80)['ncumul_deceased'].fillna(0)
+    # open public data - wave 20. Oct. 2021
+    zh_data_cum_deaths = pd.read_csv('zh/public_data.csv', skiprows=list(range(1, 594)))['ncumul_deceased'].fillna(0)
+    zh_data_cum_deaths = zh_data_cum_deaths.subtract(zh_data_cum_deaths[0])
     print(zh_data_cum_deaths)
-    collect_data['zh_obs'] = zh_data_cum_deaths
 
 
     for mult in [1.5, 1.7]:
@@ -48,6 +46,7 @@ if __name__ == '__main__':
             p.set_param("infectious_rate", ir)
             p.set_param("sd_infectiousness_multiplier", mult)
             p.set_param("end_time", 80)
+            p.set_param("n_seed_infection", 100)
 
             abm = Model(p)
 
@@ -55,11 +54,17 @@ if __name__ == '__main__':
 
             abm.run()
 
+            collect_data = pd.DataFrame()
+            collect_data['zh_obs'] = zh_data_cum_deaths
             dataName = str(p.get_param("infectious_rate"))+":"+str(p.get_param("sd_infectiousness_multiplier"))
             df_accum_daily_deaths =  pd.DataFrame(abm.results, columns=['n_death'])["n_death"]
             collect_data[dataName] = df_accum_daily_deaths
 
+            collect_data.to_csv(dataName + ".csv")
+            ax = collect_data.plot()
+            fig = ax.get_figure()
+            fig.savefig(dataName + ".pdf")
 
-    collect_data.to_csv("ch_zh_calib_accum_deaths.csv")
-    collect_data.plot()
-    plt.show()
+
+
+
