@@ -25,14 +25,15 @@ def relative_path(filename: str) -> str:
 
 if __name__ == '__main__':
 
-    # open public data - wave 20. Oct. 2021
-    zh_data_cum_deaths = pd.read_csv('zh/public_data.csv', skiprows=list(range(1, 594)))['ncumul_deceased'].fillna(0)
-    zh_data_cum_deaths = zh_data_cum_deaths.subtract(zh_data_cum_deaths[0])
+    # open public data - wave Nov. 2021
+    zh_data_cum_deaths = pd.read_csv('zh/public_data.csv', skiprows=list(range(1, 557)))['ncumul_deceased'].fillna(0)
+    zh_data_cum_deaths = zh_data_cum_deaths.subtract(zh_data_cum_deaths[10]) # shift
+    zh_data_cum_deaths = zh_data_cum_deaths.clip(lower=0)
     print(zh_data_cum_deaths)
 
 
-    for mult in [1.5, 1.7]:
-        for ir in [4.0, 4.5]:
+    for mult in [1.60, 1.65, 1.7, 1.75, 1.80]:
+        for ir in [2.18, 2.19, 2.20, 2.21, 2.22]:
 
             p = Parameters(
                 input_param_file=relative_path("zh/baseline_parameters.csv"),
@@ -42,11 +43,11 @@ if __name__ == '__main__':
                 read_param_file=True
             )
 
-            p.set_param("n_total", 100000)
+            #p.set_param("n_total", 100000)
             p.set_param("infectious_rate", ir)
             p.set_param("sd_infectiousness_multiplier", mult)
-            p.set_param("end_time", 80)
-            p.set_param("n_seed_infection", 100)
+            p.set_param("end_time", 110)
+            p.set_param("n_seed_infection", 200)
 
             abm = Model(p)
 
