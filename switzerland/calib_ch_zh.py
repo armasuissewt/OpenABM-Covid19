@@ -29,11 +29,18 @@ if __name__ == '__main__':
     zh_data_cum_deaths = pd.read_csv('zh/public_data.csv', skiprows=list(range(1, 557)))['ncumul_deceased'].fillna(0)
     zh_data_cum_deaths = zh_data_cum_deaths.subtract(zh_data_cum_deaths[10]) # shift
     zh_data_cum_deaths = zh_data_cum_deaths.clip(lower=0)
+
+    zh_data_cum_infected = pd.read_csv('zh/public_data.csv', skiprows=list(range(1, 557)))['ncumul_conf'].fillna(0)
+    zh_data_cum_infected = zh_data_cum_infected.subtract(zh_data_cum_infected[10])  # shift
+    zh_data_cum_infected = zh_data_cum_infected.clip(lower=0)
+
+
     print(zh_data_cum_deaths)
+    print(zh_data_cum_infected)
 
 
-    for mult in [1.60, 1.65, 1.7, 1.75, 1.80]:
-        for ir in [2.18, 2.19, 2.20, 2.21, 2.22]:
+    for mult in [1.3, 1.5, 1.7, 1.9]:
+        for ir in [1.75, 2.0, 2.25]:
 
             p = Parameters(
                 input_param_file=relative_path("zh/baseline_parameters.csv"),
@@ -55,16 +62,32 @@ if __name__ == '__main__':
 
             abm.run()
 
-            collect_data = pd.DataFrame()
-            collect_data['zh_obs'] = zh_data_cum_deaths
-            dataName = str(p.get_param("infectious_rate"))+":"+str(p.get_param("sd_infectiousness_multiplier"))
-            df_accum_daily_deaths =  pd.DataFrame(abm.results, columns=['n_death'])["n_death"]
-            collect_data[dataName] = df_accum_daily_deaths
+            dataName = str(p.get_param("infectious_rate")) + ":" + str(p.get_param("sd_infectiousness_multiplier"))
 
-            collect_data.to_csv(dataName + ".csv")
-            ax = collect_data.plot()
+            collect_data_death = pd.DataFrame()
+            collect_data_death['zh_obs'] = zh_data_cum_deaths
+            df_accum_daily_deaths =  pd.DataFrame(abm.results, columns=['n_death'])["n_death"]
+            collect_data_death[dataName] = df_accum_daily_deaths
+
+            collect_data_death.to_csv(dataName + "-deaths" + ".csv")
+            ax = collect_data_death.plot()
             fig = ax.get_figure()
-            fig.savefig(dataName + ".pdf")
+            fig.savefig(dataName + "-deaths" + ".pdf")
+
+            collect_data_infected = pd.DataFrame()
+            collect_data_infected['zh_obs'] = zh_data_cum_infected
+            df_accum_daily_infected = pd.DataFrame(abm.results, columns=['total_infected'])["total_infected"]
+            collect_data_infected[dataName] = df_accum_daily_infected
+
+            collect_data_infected.to_csv(dataName + "-infected" + ".csv")
+            ax = collect_data_infected.plot()
+            fig = ax.get_figure()
+            fig.savefig(dataName + "-infected" + ".pdf")
+
+            pd.DataFrame(abm.results).to_csv(dataName + "-all_res" + ".csv")
+
+
+
 
 
 
