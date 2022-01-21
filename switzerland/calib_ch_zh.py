@@ -39,8 +39,8 @@ if __name__ == '__main__':
     print(zh_data_cum_infected)
 
 
-    for mult in [1.3, 1.5, 1.7, 1.9]:
-        for ir in [1.75, 2.0, 2.25]:
+    for mult in [1.8, 1.9]:
+        for ir in [2.0, 2.10, 2.20, 2.30]:
 
             p = Parameters(
                 input_param_file=relative_path("zh/baseline_parameters.csv"),
@@ -67,7 +67,7 @@ if __name__ == '__main__':
             collect_data_death = pd.DataFrame()
             collect_data_death['zh_obs'] = zh_data_cum_deaths
             df_accum_daily_deaths =  pd.DataFrame(abm.results, columns=['n_death'])["n_death"]
-            collect_data_death[dataName] = df_accum_daily_deaths
+            collect_data_death[dataName] = pd.DataFrame(abm.results, columns=['n_death'])["n_death"]
 
             collect_data_death.to_csv(dataName + "-deaths" + ".csv")
             ax = collect_data_death.plot()
